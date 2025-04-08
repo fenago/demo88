@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsupervised Learning Analyzer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h1>Unsupervised Learning Analyzer</h1>
+                <p class="lead">Interactive K-means clustering analysis tool</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="analysis-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="cluster-tab" data-bs-toggle="tab" data-bs-target="#cluster-form" type="button" role="tab" aria-controls="cluster-form" aria-selected="true">Cluster Analysis</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="elbow-tab" data-bs-toggle="tab" data-bs-target="#elbow-form" type="button" role="tab" aria-controls="elbow-form" aria-selected="false">Elbow Method</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="analysisTabContent">
+                            <!-- Cluster Analysis Form -->
+                            <div class="tab-pane fade show active" id="cluster-form" role="tabpanel" aria-labelledby="cluster-tab">
+                                <form action="/tax_analysis" method="post">
+                                    <div class="mb-3">
+                                        <label for="data-url" class="form-label">Data URL (CSV)</label>
+                                        <input type="text" class="form-control" id="data-url" name="data_url" value="https://raw.githubusercontent.com/fenago/datasets/refs/heads/main/taxstats2015.csv" required>
+                                        <div class="form-text">URL to CSV file containing Australian tax statistics data</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="analysis-type" class="form-label">Analysis Type</label>
+                                        <select class="form-select" id="analysis-type" name="analysis_type">
+                                            <option value="taxpayer" selected>Taxpayer Analysis (Net Tax & Deductions)</option>
+                                            <option value="business">Business Analysis (Income & Expenses)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="n-clusters" class="form-label">Number of Clusters</label>
+                                        <input type="range" class="form-range" min="2" max="10" value="3" id="n-clusters" name="n_clusters" oninput="this.nextElementSibling.value = this.value">
+                                        <output>3</output>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Run Cluster Analysis</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Elbow Method Form -->
+                            <div class="tab-pane fade" id="elbow-form" role="tabpanel" aria-labelledby="elbow-tab">
+                                <form action="/elbow_method" method="post">
+                                    <div class="mb-3">
+                                        <label for="elbow-data-url" class="form-label">Data URL (CSV)</label>
+                                        <input type="text" class="form-control" id="elbow-data-url" name="data_url" value="https://raw.githubusercontent.com/fenago/datasets/refs/heads/main/taxstats2015.csv" required>
+                                        <div class="form-text">URL to CSV file containing Australian tax statistics data</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="elbow-analysis-type" class="form-label">Analysis Type</label>
+                                        <select class="form-select" id="elbow-analysis-type" name="analysis_type">
+                                            <option value="taxpayer" selected>Taxpayer Analysis (Net Tax & Deductions)</option>
+                                            <option value="business">Business Analysis (Income & Expenses)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="max-clusters" class="form-label">Maximum Number of Clusters</label>
+                                        <input type="range" class="form-range" min="5" max="15" value="10" id="max-clusters" name="max_clusters" oninput="this.nextElementSibling.value = this.value">
+                                        <output>10</output>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Run Elbow Method Analysis</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5>About This Tool</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>This interactive tool performs K-means clustering on Australian tax data to identify patterns in taxpayer and business behavior.</p>
+                        <h6>Analysis Options:</h6>
+                        <ul>
+                            <li><strong>Taxpayer Analysis:</strong> Clusters based on average net tax and average total deductions</li>
+                            <li><strong>Business Analysis:</strong> Clusters based on average total business income and average total business expenses</li>
+                        </ul>
+                        <h6>Supported Features:</h6>
+                        <ul>
+                            <li>K-means clustering with customizable number of clusters</li>
+                            <li>Elbow method for finding optimal number of clusters</li>
+                            <li>Interactive visualizations of cluster distributions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
