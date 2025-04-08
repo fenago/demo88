@@ -61,17 +61,17 @@
                                     <tr>
                                         <th>Cluster</th>
                                         <th>Count</th>
-                                        <th>Feature 1 (Mean)</th>
-                                        <th>Feature 2 (Mean)</th>
+                                        <th>{{ result.feature_names.feature1 }} (Mean)</th>
+                                        <th>{{ result.feature_names.feature2 }} (Mean)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for stat in result.cluster_stats %}
                                     <tr>
                                         <td>{{ stat.cluster }}</td>
-                                        <td>{{ stat[list(stat.keys())[1]]['count'] }}</td>
-                                        <td>{{ stat[list(stat.keys())[1]]['mean'] | round(2) }}</td>
-                                        <td>{{ stat[list(stat.keys())[2]]['mean'] | round(2) }}</td>
+                                        <td>{{ stat.count }}</td>
+                                        <td>{{ stat.feature1_mean | safe_round(2) }}</td>
+                                        <td>{{ stat.feature2_mean | safe_round(2) }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -95,17 +95,17 @@
                                 <thead>
                                     <tr>
                                         <th>Postcode</th>
-                                        <th>Feature 1</th>
-                                        <th>Feature 2</th>
+                                        <th>{{ result.feature_names.feature1 }}</th>
+                                        <th>{{ result.feature_names.feature2 }}</th>
                                         <th>Cluster</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for row in result.sample_data %}
                                     <tr>
-                                        <td>{{ row.Postcode }}</td>
-                                        <td>{{ row[list(row.keys())[1]] | round(2) }}</td>
-                                        <td>{{ row[list(row.keys())[2]] | round(2) }}</td>
+                                        <td>{{ row.postcode }}</td>
+                                        <td>{{ row.feature1 | safe_round(2) }}</td>
+                                        <td>{{ row.feature2 | safe_round(2) }}</td>
                                         <td><span class="badge bg-primary">{{ row.cluster }}</span></td>
                                     </tr>
                                     {% endfor %}

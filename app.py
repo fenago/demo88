@@ -13,6 +13,20 @@ from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
+# Add required functions to Jinja2 environment
+app.jinja_env.globals.update(zip=zip, list=list)
+
+# Add custom filter for safe rounding
+def safe_round(value, precision=0):
+    if value is None or value == '':
+        return ''
+    try:
+        return round(float(value), precision)
+    except (ValueError, TypeError):
+        return value
+        
+app.jinja_env.filters['safe_round'] = safe_round
+
 # Default data source
 DEFAULT_DATA_URL = "https://raw.githubusercontent.com/fenago/datasets/refs/heads/main/taxstats2015.csv"
 
@@ -54,19 +68,40 @@ def tax_analysis():
         # Get cluster centroids (transform back to original scale)
         centroids = scaler.inverse_transform(kmeans.cluster_centers_)
         
-        # Calculate cluster statistics
-        cluster_stats = df.groupby('cluster')[feature_cols].agg(['mean', 'count']).reset_index()
-        cluster_stats_dict = cluster_stats.to_dict(orient='records')
+        # Calculate cluster statistics in a simplified format
+        stats = []
+        for cluster_id, group in df.groupby('cluster'):
+            stats.append({
+                'cluster': int(cluster_id),
+                'count': len(group),
+                'feature1_mean': float(group[feature_cols[0]].mean()),
+                'feature2_mean': float(group[feature_cols[1]].mean())
+            })
+        cluster_stats_dict = stats
         
         # Generate plots
         plots = generate_plots(df, feature_cols, centroids)
         
-        # Prepare response data
+        # Prepare response data with simplified structures
+        sample_data = []
+        for _, row in df.head(10).iterrows():
+            sample_data.append({
+                'postcode': row['Postcode'],
+                'feature1': float(row[feature_cols[0]]),
+                'feature2': float(row[feature_cols[1]]),
+                'cluster': int(row['cluster'])
+            })
+            
+        # Create a simplified result dictionary
         result = {
             'message': 'Analysis completed successfully',
             'cluster_stats': cluster_stats_dict,
             'plots': plots,
-            'sample_data': df.head(10).to_dict(orient='records')
+            'sample_data': sample_data,
+            'feature_names': {
+                'feature1': feature_cols[0],
+                'feature2': feature_cols[1]
+            }
         }
         
         return render_template('results.html', result=result)
